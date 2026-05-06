@@ -1,9 +1,21 @@
 import '../global.css';
+import { useEffect } from 'react';
+import { Platform } from 'react-native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { CompletionProvider } from '../db/CompletionContext';
 
 export default function RootLayout() {
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const link = document.createElement('link');
+      link.rel = 'icon';
+      link.type = 'image/svg+xml';
+      link.href = '/favicon.svg';
+      document.head.appendChild(link);
+    }
+  }, []);
+
   return (
     <CompletionProvider>
       <StatusBar style="dark" />
