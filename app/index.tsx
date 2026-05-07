@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import MonthCalendar from '../components/MonthCalendar';
 import DayDetail from '../components/DayDetail';
+import ProgressGraph from '../components/ProgressGraph';
 import {
   getPlanBounds,
   RACE_DATE,
@@ -89,25 +90,33 @@ export default function CalendarScreen() {
           >
             {/* Header */}
             <View className="px-4 pt-6 pb-4">
-              <Text className="text-light-muted text-xs font-semibold tracking-widest uppercase mb-1">
-                Big Sur Marathon
-              </Text>
-              <Text className="text-light-text text-3xl font-bold tracking-tight">
-                Training Plan
-              </Text>
+              <View className="flex-row items-stretch">
+                {/* Left: title + countdown + description */}
+                <View>
+                  <Text className="text-light-muted text-xs font-semibold tracking-widest uppercase mb-1">
+                    Big Sur Marathon
+                  </Text>
+                  <Text className="text-light-text text-3xl font-bold tracking-tight">
+                    Training Plan
+                  </Text>
+                  <View className="flex-row items-baseline mt-3 gap-2">
+                    <Text className="text-brand-primary text-5xl font-black tracking-tighter">
+                      {countdown}
+                    </Text>
+                    <Text className="text-light-subtle text-base font-medium">
+                      days to go
+                    </Text>
+                  </View>
+                  <Text className="text-light-muted text-xs mt-1">
+                    April 25, 2027 · Hal Higdon Novice 1 (50 weeks)
+                  </Text>
+                </View>
 
-              {/* Countdown */}
-              <View className="flex-row items-baseline mt-3 gap-2">
-                <Text className="text-brand-primary text-5xl font-black tracking-tighter">
-                  {countdown}
-                </Text>
-                <Text className="text-light-subtle text-base font-medium">
-                  days to go
-                </Text>
+                {/* Right: graph spanning full height of header */}
+                <View style={{ width: 160, marginLeft: 16 }}>
+                  <ProgressGraph logs={logs} />
+                </View>
               </View>
-              <Text className="text-light-muted text-xs mt-1">
-                April 25, 2027 · Hal Higdon Novice 1 (50 weeks)
-              </Text>
 
               {/* Weekly + Overall progress */}
               <View className="flex-row gap-3 mt-4">
