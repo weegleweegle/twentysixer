@@ -2,6 +2,7 @@ export interface WorkoutLog {
   date: string;
   actual_miles: number;
   notes: string;
+  source: 'manual' | 'healthkit';
 }
 
 const KEY = 'marathon_workout_log';
@@ -11,7 +12,8 @@ function readStore(): Map<string, WorkoutLog> {
     const raw = localStorage.getItem(KEY);
     if (!raw) return new Map();
     const arr: WorkoutLog[] = JSON.parse(raw);
-    return new Map(arr.map(r => [r.date, r]));
+    // Backfill source for entries saved before this field existed
+    return new Map(arr.map(r => [r.date, { ...r, source: r.source ?? 'manual' }]));
   } catch {
     return new Map();
   }
@@ -25,9 +27,14 @@ export async function getAllLogs(): Promise<WorkoutLog[]> {
   return [...readStore().values()];
 }
 
-export async function setLog(date: string, actual_miles: number, notes: string): Promise<void> {
+export async function setLog(
+  date: string,
+  actual_miles: number,
+  notes: string,
+  source: 'manual' | 'healthkit' = 'manual'
+): Promise<void> {
   const store = readStore();
-  store.set(date, { date, actual_miles, notes });
+  store.set(date, { date, actual_miles, notes, source });
   writeStore(store);
 }
 

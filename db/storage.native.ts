@@ -4,6 +4,7 @@ export interface WorkoutLog {
   date: string;
   actual_miles: number;
   notes: string;
+  source: 'manual' | 'healthkit';
 }
 
 let _db: SQLiteDatabase | null = null;
@@ -15,22 +16,34 @@ async function getDb(): Promise<SQLiteDatabase> {
     CREATE TABLE IF NOT EXISTS workout_log (
       date TEXT PRIMARY KEY,
       actual_miles REAL NOT NULL,
-      notes TEXT NOT NULL DEFAULT ''
+      notes TEXT NOT NULL DEFAULT '',
+      source TEXT NOT NULL DEFAULT 'manual'
     );
   `);
+  // Migration: add source column if it doesn't exist yet (for existing installs)
+  try {
+    await _db.execAsync(`ALTER TABLE workout_log ADD COLUMN source TEXT NOT NULL DEFAULT 'manual';`);
+  } catch {
+    // Column already exists — safe to ignore
+  }
   return _db;
 }
 
 export async function getAllLogs(): Promise<WorkoutLog[]> {
   const db = await getDb();
-  return db.getAllAsync<WorkoutLog>('SELECT date, actual_miles, notes FROM workout_log');
+  return db.getAllAsync<WorkoutLog>('SELECT date, actual_miles, notes, source FROM workout_log');
 }
 
-export async function setLog(date: string, actual_miles: number, notes: string): Promise<void> {
+export async function setLog(
+  date: string,
+  actual_miles: number,
+  notes: string,
+  source: 'manual' | 'healthkit' = 'manual'
+): Promise<void> {
   const db = await getDb();
   await db.runAsync(
-    'INSERT OR REPLACE INTO workout_log (date, actual_miles, notes) VALUES (?, ?, ?)',
-    date, actual_miles, notes
+    'INSERT OR REPLACE INTO workout_log (date, actual_miles, notes, source) VALUES (?, ?, ?, ?)',
+    date, actual_miles, notes, source
   );
 }
 

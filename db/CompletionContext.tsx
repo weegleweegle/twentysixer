@@ -5,7 +5,7 @@ export type { WorkoutLog };
 
 interface CompletionCtx {
   logs: Map<string, WorkoutLog>;
-  logWorkout: (date: string, actual_miles: number, notes?: string) => Promise<void>;
+  logWorkout: (date: string, actual_miles: number, notes?: string, source?: 'manual' | 'healthkit') => Promise<void>;
   removeLog: (date: string) => Promise<void>;
 }
 
@@ -21,8 +21,8 @@ export function CompletionProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => { load(); }, [load]);
 
-  const logWorkout = useCallback(async (date: string, actual_miles: number, notes = '') => {
-    await setLog(date, actual_miles, notes);
+  const logWorkout = useCallback(async (date: string, actual_miles: number, notes = '', source: 'manual' | 'healthkit' = 'manual') => {
+    await setLog(date, actual_miles, notes, source);
     await load();
   }, [load]);
 
