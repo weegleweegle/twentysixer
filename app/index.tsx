@@ -8,6 +8,7 @@ import DayDetail from '../components/DayDetail';
 import ProgressGraph from '../components/ProgressGraph';
 import HealthKitPermissionModal from '../components/HealthKitPermissionModal';
 import { requestPermission } from '../db/healthkit';
+import { syncTodayIfNeeded } from '../db/syncHealthKit';
 import {
   getPlanBounds,
   RACE_DATE,
@@ -68,6 +69,11 @@ export default function CalendarScreen() {
     AsyncStorage.getItem('hk_permission_asked').then(val => {
       if (!val) setShowHKModal(true);
     });
+  }, []);
+
+  // Foreground sync on app open — catches cases where background task didn't fire
+  useEffect(() => {
+    syncTodayIfNeeded();
   }, []);
 
   async function handleHKConnect() {
