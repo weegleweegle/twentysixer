@@ -126,25 +126,39 @@ export default function DayDetail({ date, onClose }: Props) {
         {canLog && (
           <View className="px-6 mb-6">
             {log && !editing ? (
-              <View className="bg-light-card rounded-2xl p-5 flex-row items-center justify-between">
-                <View className="flex-row items-center gap-3">
-                  <View className="w-8 h-8 rounded-full bg-brand-success/20 items-center justify-center">
-                    <Text className="text-brand-success text-base font-black">✓</Text>
+              log.source === 'healthkit' ? (
+                /* HealthKit / Apple Watch entry — no Edit or Undo */
+                <View className="bg-light-card rounded-2xl p-5 flex-row items-center gap-3">
+                  <View className="w-8 h-8 rounded-full bg-brand-primary/15 items-center justify-center">
+                    <Text className="text-base">⌚</Text>
                   </View>
                   <View>
-                    <Text className="text-brand-success text-sm font-bold">Completed</Text>
-                    <Text className="text-light-muted text-xs mt-0.5">{log.actual_miles} mi logged</Text>
+                    <Text className="text-brand-primary text-sm font-bold">Synced from Apple Watch</Text>
+                    <Text className="text-light-muted text-xs mt-0.5">{log.actual_miles} mi · auto-synced</Text>
                   </View>
                 </View>
-                <View className="flex-row gap-3">
-                  <Pressable onPress={startEdit}>
-                    <Text className="text-light-subtle text-sm font-medium">Edit</Text>
-                  </Pressable>
-                  <Pressable onPress={handleUndo}>
-                    <Text className="text-red-500 text-sm font-medium">Undo</Text>
-                  </Pressable>
+              ) : (
+                /* Manual entry */
+                <View className="bg-light-card rounded-2xl p-5 flex-row items-center justify-between">
+                  <View className="flex-row items-center gap-3">
+                    <View className="w-8 h-8 rounded-full bg-brand-success/20 items-center justify-center">
+                      <Text className="text-brand-success text-base font-black">✓</Text>
+                    </View>
+                    <View>
+                      <Text className="text-brand-success text-sm font-bold">Completed</Text>
+                      <Text className="text-light-muted text-xs mt-0.5">{log.actual_miles} mi logged</Text>
+                    </View>
+                  </View>
+                  <View className="flex-row gap-3">
+                    <Pressable onPress={startEdit}>
+                      <Text className="text-light-subtle text-sm font-medium">Edit</Text>
+                    </Pressable>
+                    <Pressable onPress={handleUndo}>
+                      <Text className="text-red-500 text-sm font-medium">Undo</Text>
+                    </Pressable>
+                  </View>
                 </View>
-              </View>
+              )
             ) : editing ? (
               <View className="bg-light-card rounded-2xl p-5">
                 <Text className="text-light-muted text-xs font-semibold tracking-widest uppercase mb-3">

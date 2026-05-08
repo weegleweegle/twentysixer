@@ -30,7 +30,9 @@ const MILES_COLOR: Record<WorkoutType, string> = {
 
 export default function DayCell({ day, dateStr, workoutType, miles, isToday, isPast, onPress }: Props) {
   const { logs } = useCompletions();
-  const isCompleted = dateStr ? logs.has(dateStr) : false;
+  const log = dateStr ? logs.get(dateStr) : undefined;
+  const isCompleted = !!log;
+  const isWatch = log?.source === 'healthkit';
 
   if (day === null) {
     return <View className="flex-1 aspect-square" />;
@@ -62,7 +64,10 @@ export default function DayCell({ day, dateStr, workoutType, miles, isToday, isP
       )}
       {isCompleted && hasWorkout && (
         <View className="absolute top-0.5 right-1">
-          <Text className="text-brand-success text-[9px] font-black">✓</Text>
+          {isWatch
+            ? <Text className="text-[9px]">⌚</Text>
+            : <Text className="text-brand-success text-[9px] font-black">✓</Text>
+          }
         </View>
       )}
     </Pressable>
