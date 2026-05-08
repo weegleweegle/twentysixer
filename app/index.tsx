@@ -1,10 +1,13 @@
-import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
+import { useEffect, useMemo, useState } from 'react';
+import { Platform, Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import MonthCalendar from '../components/MonthCalendar';
 import DayDetail from '../components/DayDetail';
 import ProgressGraph from '../components/ProgressGraph';
+import HealthKitPermissionModal from '../components/HealthKitPermissionModal';
+import { requestPermission } from '../db/healthkit';
 import {
   getPlanBounds,
   RACE_DATE,
@@ -57,6 +60,26 @@ export default function CalendarScreen() {
 
   const [currentIdx, setCurrentIdx] = useState(0);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [showHKModal, setShowHKModal] = useState(false);
+
+  // Show HealthKit permission modal once on first iOS launch
+  useEffect(() => {
+    if (Platform.OS !== 'ios') return;
+    AsyncStorage.getItem('hk_permission_asked').then(val => {
+      if (!val) setShowHKModal(true);
+    });
+  }, []);
+
+  async function handleHKConnect() {
+    await AsyncStorage.setItem('hk_permission_asked', 'true');
+    setShowHKModal(false);
+    await requestPermission();
+  }
+
+  async function handleHKDismiss() {
+    await AsyncStorage.setItem('hk_permission_asked', 'true');
+    setShowHKModal(false);
+  }
 
   const { logs } = useCompletions();
 
@@ -203,6 +226,12 @@ export default function CalendarScreen() {
           </View>
         )}
       </View>
+
+      <HealthKitPermissionModal
+        visible={showHKModal}
+        onConnect={handleHKConnect}
+        onDismiss={handleHKDismiss}
+      />
     </SafeAreaView>
   );
 }
