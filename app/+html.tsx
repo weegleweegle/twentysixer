@@ -9,7 +9,7 @@ export default function Root({ children }: PropsWithChildren) {
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <title>MRTHN</title>
-        <link rel="icon" href="/favicon.png" type="image/png" />
+        {/* Favicon is injected by scripts/fix-favicon.js after expo export */}
         <ScrollViewStyleReset />
       </head>
       <body>{children}</body>
