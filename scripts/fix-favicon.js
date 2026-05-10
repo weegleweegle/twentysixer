@@ -26,10 +26,12 @@ try {
 const before = html;
 html = html.replace(/<link[^>]*rel=["']icon["'][^>]*\/?>/gi, '');
 
-// Inject SVG (modern browsers) + PNG fallback (Safari, older browsers) right before </head>
+// Inject SVG (modern browsers) + PNG fallback (Safari, older browsers) right before </head>.
+// The ?v= query string busts browser favicon caches — increment it when the icon changes.
+const V = '2';
 const favicons = [
-  '<link rel="icon" type="image/svg+xml" href="/favicon.svg" />',
-  '<link rel="icon" type="image/png" href="/favicon.png" />',
+  `<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=${V}" />`,
+  `<link rel="icon" type="image/png" href="/favicon.png?v=${V}" />`,
 ].join('');
 
 html = html.replace('</head>', `${favicons}</head>`);
